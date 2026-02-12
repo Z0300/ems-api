@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: ems-api
+  jwt:
+    secret: ${JWT_SECRET}
+    accessTokenExpiration: 900 # 5m
+    refreshTokenExpiration: 604800 # 7d
+  profiles:
+    active: dev
