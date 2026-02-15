@@ -1,5 +1,6 @@
 package com.api.ems.entities;
 
+import com.api.ems.entities.enums.EventStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -44,10 +45,13 @@ public class Event {
     private User organizer;
 
     @Column(name = "status")
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private EventStatus status;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
 
-
+    public boolean isOrganizedBy(User organizer) {
+        return this.organizer.equals(organizer);
+    }
 }

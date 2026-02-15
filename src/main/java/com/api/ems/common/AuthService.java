@@ -1,4 +1,4 @@
-package com.api.ems.auth;
+package com.api.ems.common;
 
 import com.api.ems.entities.User;
 import com.api.ems.users.UserRepository;
@@ -7,6 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+
 
 @AllArgsConstructor
 @Service
