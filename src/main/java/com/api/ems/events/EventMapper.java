@@ -2,7 +2,6 @@ package com.api.ems.events;
 
 
 import com.api.ems.entities.Event;
-import com.api.ems.entities.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 

@@ -1,10 +1,12 @@
 package com.api.ems.entities;
 
+import com.api.ems.entities.enums.RegistrationStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+
 
 @Getter
 @Setter
@@ -16,20 +18,23 @@ public class Registration {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "event_id")
-    private Long eventId;
+    @ManyToOne
+    @JoinColumn(name = "event_id")
+    private Event event;
 
-    @Column(name = "attendee_id")
-    private Long attendeeId;
+    @ManyToOne
+    @JoinColumn(name = "attendee_id")
+    private User attendee;
 
-    @Column(name = "registration_date")
+    @Column(name = "registration_date", insertable = false, updatable = false)
     private LocalDateTime registrationDate;
 
     @Column(name = "qr_token")
     private String qrToken;
 
     @Column(name = "status")
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private RegistrationStatus status;
 
     @OneToOne(mappedBy = "registration")
     private Attendance attendance;

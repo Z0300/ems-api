@@ -37,12 +37,10 @@ create table registrations
     event_id          bigint unsigned                       not null,
     attendee_id       bigint unsigned                       not null,
     registration_date datetime    default current_timestamp not null,
-    qr_token          varchar(255)                          not null,
+    qr_token          varchar(1024)                         not null,
     status            varchar(20) default 'REGISTERED'      not null,
     constraint event_attendee_uq
-        unique (event_id, attendee_id),
-    constraint qr_token_uq
-        unique (qr_token)
+        unique (event_id, attendee_id)
 );
 
 create table attendance

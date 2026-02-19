@@ -2,13 +2,19 @@ package com.api.ems.entities;
 
 import com.api.ems.entities.enums.EventStatus;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @Entity
@@ -51,7 +57,21 @@ public class Event {
     @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @OneToMany(mappedBy = "event")
+    private Set<Registration> registrations = new LinkedHashSet<>();
+
+
     public boolean isOrganizedBy(User organizer) {
         return this.organizer.equals(organizer);
     }
+
+    public boolean isExpired() {
+        if (eventDate == null || endTime == null) {
+            return false;
+        }
+
+        LocalDateTime eventEndDateTime = LocalDateTime.of(eventDate, endTime);
+        return LocalDateTime.now().isAfter(eventEndDateTime);
+    }
+
 }
