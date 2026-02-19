@@ -20,7 +20,7 @@ public class UserService {
         }
 
         var user = userMapper.toEntity(request);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
         user.setRole(Role.ATTENDEE);
         userRepository.save(user);
 

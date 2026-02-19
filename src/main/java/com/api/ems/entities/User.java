@@ -2,9 +2,7 @@ package com.api.ems.entities;
 
 import com.api.ems.entities.enums.Role;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
@@ -13,8 +11,6 @@ import java.util.List;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Table(name = "users")
 public class User {
@@ -30,7 +26,7 @@ public class User {
     private String username;
 
     @Column(name = "password_hash")
-    private String password;
+    private String passwordHash;
 
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
@@ -44,6 +40,9 @@ public class User {
 
     @OneToMany(mappedBy = "organizer")
     private List<Event> events = new ArrayList<>();
+
+    @OneToMany(mappedBy = "attendee")
+    private List<Registration> registrations = new ArrayList<>();
 
 
 }

@@ -23,7 +23,7 @@ public class UserDetailsConfigService implements UserDetailsService {
 
         return new User(
                 user.getUsername(),
-                user.getPassword(),
+                user.getPasswordHash(),
                 Collections.emptyList());
     }
 }

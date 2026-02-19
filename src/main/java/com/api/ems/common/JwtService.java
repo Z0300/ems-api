@@ -1,7 +1,6 @@
 package com.api.ems.common;
 
 import com.api.ems.entities.User;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;

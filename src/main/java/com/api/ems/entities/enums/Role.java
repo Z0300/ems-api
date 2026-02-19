@@ -5,4 +5,5 @@ public enum Role {
     ORGANIZER,
     STAFF,
     ATTENDEE
+
 }

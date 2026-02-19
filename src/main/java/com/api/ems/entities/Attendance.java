@@ -20,7 +20,7 @@ public class Attendance {
     @JoinColumn(name = "registration_id")
     private Registration registration;
 
-    @Column(name = "check_in_time")
+    @Column(name = "check_in_time", insertable = false, updatable = false)
     private LocalDateTime checkInTime;
 
     @ManyToOne
