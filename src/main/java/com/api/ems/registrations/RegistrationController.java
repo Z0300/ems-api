@@ -37,4 +37,11 @@ public class RegistrationController {
                 new ErrorDto(ex.getMessage())
         );
     }
+
+    @ExceptionHandler(ReferenceCodeCollisionException.class)
+    public ResponseEntity<ErrorDto> handleReferenceCodeCollision(ReferenceCodeCollisionException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                new ErrorDto(ex.getMessage())
+        );
+    }
 }

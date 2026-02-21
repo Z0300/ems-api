@@ -2,14 +2,15 @@ package com.api.ems.registrations;
 
 import com.api.ems.common.AuthService;
 import com.api.ems.common.QrCodeGenerator;
-import com.api.ems.common.QrCodeTokenService;
-import com.api.ems.entities.Event;
 import com.api.ems.entities.enums.RegistrationStatus;
 import com.api.ems.events.EventNotFoundException;
 import com.api.ems.events.EventRepository;
 import lombok.AllArgsConstructor;
-import org.jspecify.annotations.NonNull;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Base64;
 
 @AllArgsConstructor
 @Service
@@ -17,16 +18,21 @@ public class RegistrationService {
     private final RegistrationRepository registrationRepository;
     private final AuthService authService;
     private final RegistrationMapper registrationMapper;
-    private final QrCodeTokenService qrCodeTokenService;
-    private final QrCodeGenerator qrCodeGenerator;
     private final EventRepository eventRepository;
+    private final QrCodeGenerator qrCodeGenerator;
+    private final ShortCodeGenerator shortCodeGenerator;
 
+    @Transactional
     public RegistrationDto register(CreateRegistrationRequest request) {
+
         var attendee = authService.getCurrentUser();
 
-        var event = getEventById(request.getEventId());
+        var event = eventRepository.findById(request.getEventId())
+                .orElseThrow(EventNotFoundException::new);
 
-        if (registrationRepository.existsRegistrationsByEventIdAndAttendeeId(request.getEventId(), attendee.getId())) {
+        if (registrationRepository
+                .existsRegistrationsByEventIdAndAttendeeId(
+                        request.getEventId(), attendee.getId())) {
             throw new RegistrationConflictException();
         }
 
@@ -34,47 +40,33 @@ public class RegistrationService {
             throw new EventExpiredException();
         }
 
-        var registration = registrationMapper.toEntity(request);
-        var qrCodeToken = getQrToken(request.getEventId());
-        registration.setEvent(event);
-        registration.setAttendee(attendee);
-        registration.setQrToken(qrCodeToken);
-        registration.setStatus(RegistrationStatus.REGISTERED);
+        int attempts = 0;
 
-        registrationRepository.save(registration);
+        while (attempts < 5) {
 
-        return registrationMapper.toDto(registration);
-    }
+            try {
+                var registration = registrationMapper.toEntity(request);
 
+                registration.setEvent(event);
+                registration.setAttendee(attendee);
+                registration.setStatus(RegistrationStatus.REGISTERED);
 
-    private String getQrToken(
-            Long eventId) {
+                String referenceCode = shortCodeGenerator.generate();
+                registration.setReferenceCode(referenceCode);
+                registrationRepository.save(registration);
 
-        var event = getEventById(eventId);
+                byte[] qrImage = qrCodeGenerator.generateQrImage(referenceCode, 200, 200);
+                String qrBase64 = Base64.getEncoder().encodeToString(qrImage);
 
-        return qrCodeTokenService.generateToken(
-                eventId,
-                event.getEventDate(),
-                event.getStartTime(),
-                event.getEndTime());
-    }
+                var dto = registrationMapper.toDto(registration);
+                dto.setBase64Image(qrBase64);
 
-    private byte[] createClientQrCode(
-            Long eventId) {
+                return dto;
 
-        var event = getEventById(eventId);
-
-        String token = qrCodeTokenService.generateToken(
-                eventId,
-                event.getEventDate(),
-                event.getStartTime(),
-                event.getEndTime());
-
-        return qrCodeGenerator.generateQrImage(token, 300, 300);
-    }
-
-    private @NonNull Event getEventById(Long eventId) {
-        return eventRepository.findById(eventId)
-                .orElseThrow(EventNotFoundException::new);
+            } catch (DataIntegrityViolationException ex) {
+                attempts++;
+            }
+        }
+        throw new ReferenceCodeCollisionException();
     }
 }

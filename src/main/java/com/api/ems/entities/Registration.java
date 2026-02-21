@@ -29,8 +29,8 @@ public class Registration {
     @Column(name = "registration_date", insertable = false, updatable = false)
     private LocalDateTime registrationDate;
 
-    @Column(name = "qr_token")
-    private String qrToken;
+    @Column(name = "reference_code")
+    private String referenceCode;
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)

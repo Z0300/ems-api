@@ -7,6 +7,7 @@ public class RegistrationDto {
     private Long id;
     private Long eventId;
     private Long attendeeId;
-    private String qrToken;
+    private String referenceCode;
     private String status;
+    private String base64Image;
 }
