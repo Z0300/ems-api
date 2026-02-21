@@ -22,8 +22,8 @@ public class User {
     @Column(name = "full_name")
     private String fullName;
 
-    @Column(name = "username")
-    private String username;
+    @Column(name = "email")
+    private String email;
 
     @Column(name = "password_hash")
     private String passwordHash;
@@ -31,6 +31,9 @@ public class User {
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Column(name = "mobile_no")
+    private String mobileNo;
 
     @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;

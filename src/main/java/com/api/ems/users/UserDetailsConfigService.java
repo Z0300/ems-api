@@ -18,11 +18,11 @@ public class UserDetailsConfigService implements UserDetailsService {
     @Override
     @NullMarked
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        var user = userRepository.findByUsername(username).orElseThrow(() ->
+        var user = userRepository.findByEmail(username).orElseThrow(() ->
                 new UsernameNotFoundException("User not found"));
 
         return new User(
-                user.getUsername(),
+                user.getEmail(),
                 user.getPasswordHash(),
                 Collections.emptyList());
     }

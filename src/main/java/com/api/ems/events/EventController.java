@@ -68,10 +68,5 @@ public class EventController {
         );
     }
 
-    @ExceptionHandler(EventNotFoundException.class)
-    public ResponseEntity<ErrorDto> handleEventNotFound(EventNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                new ErrorDto(ex.getMessage())
-        );
-    }
+
 }
