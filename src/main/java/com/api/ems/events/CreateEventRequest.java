@@ -2,12 +2,12 @@ package com.api.ems.events;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Data
+@ValidEventSchedule
 public class CreateEventRequest {
     @NotBlank(message = "Title is required.")
     @Size(max = 200, message = "Name must be less than 200 characters")

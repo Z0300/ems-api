@@ -29,10 +29,10 @@ public interface RegistrationRepository extends JpaRepository<Registration, Long
             "event.organizer"
     })
     @Query("""
-            select r from Registration r\s
-                    where (:name is null or lower(r.attendee.fullName)
-                             like lower(concat('%', :name, '%')))
-                                     and (:status is null or r.status = :status)""")
+            select r from Registration r
+            where (:name is null or lower(r.attendee.fullName)
+            like lower(concat('%', :name, '%')))
+            and (:status is null or r.status = :status)""")
     Page<Registration> getFilteredRegistrations(Pageable pageable,
                                                 @Param("name") String name,
                                                 @Param("status") RegistrationStatus status);

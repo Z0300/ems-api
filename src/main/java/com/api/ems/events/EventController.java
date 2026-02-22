@@ -22,14 +22,16 @@ public class EventController {
 
     @GetMapping
     public PageDto<EventDto> getEvents(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) EventStatus status,
             @SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) final Pageable pageable
     ) {
-        return eventService.getEvents(pageable);
+        return eventService.getEvents(pageable, name, status);
     }
 
-    @GetMapping("/{eventId}")
-    public EventDto getEvent(@PathVariable Long eventId) {
-        return eventService.getEvent(eventId);
+    @GetMapping("/{id}")
+    public EventDto getEvent(@PathVariable Long id) {
+        return eventService.getEvent(id);
     }
 
     @PostMapping
@@ -42,24 +44,20 @@ public class EventController {
         return ResponseEntity.created(uri).body(eventDto);
     }
 
-    @PutMapping("/{eventId}")
+    @PutMapping("/{id}")
     public ResponseEntity<?> updateEvent(
-            @PathVariable Long eventId,
+            @PathVariable Long id,
             @Valid @RequestBody UpdateEventRequest request
     ) {
-        var eventDto = eventService.updateEvent(request, eventId);
+        var eventDto = eventService.updateEvent(request, id);
         return ResponseEntity.ok(eventDto);
     }
 
-    @PutMapping("/{eventId}/status/{status}")
-    public ResponseEntity<?> updateStatus(
-            @PathVariable Long eventId,
-            @PathVariable EventStatus status
-            ) {
-        var eventDto = eventService.updateStatus(eventId, status);
+    @PatchMapping("/{id}/cancel}")
+    public ResponseEntity<?> cancel(@PathVariable Long id) {
+        var eventDto = eventService.cancel(id);
         return ResponseEntity.ok(eventDto);
     }
-
 
     @ExceptionHandler(EventTitleConflictException.class)
     public ResponseEntity<ErrorDto> handleTitleConflict(EventTitleConflictException ex) {
