@@ -6,9 +6,19 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface RegistrationMapper {
+    @Mapping(source = "event.title", target = "event")
+    @Mapping(source = "attendee.fullName", target = "attendee")
+    RegistrationDto toDto(Registration registration);
+
+    @Mapping(source = "event", target = "event")
+    @Mapping(source = "attendee", target = "attendee")
+    RegistrationWithEventAndAttendee toDetailedDto(Registration registration);
+
     @Mapping(source = "event.id", target = "eventId")
     @Mapping(source = "attendee.id", target = "attendeeId")
-    RegistrationDto toDto(Registration registration);
+    CreateRegistrationResult toCreateResultDto(Registration registration);
+
+    CancelRegistrationResult toCancelResultDto(Registration registration);
 
     Registration toEntity(CreateRegistrationRequest request);
 }
