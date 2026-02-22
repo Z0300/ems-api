@@ -53,7 +53,7 @@ public class EventController {
         return ResponseEntity.ok(eventDto);
     }
 
-    @PatchMapping("/{id}/cancel}")
+    @PatchMapping("/{id}/cancel")
     public ResponseEntity<?> cancel(@PathVariable Long id) {
         var eventDto = eventService.cancel(id);
         return ResponseEntity.ok(eventDto);
