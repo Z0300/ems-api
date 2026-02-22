@@ -41,20 +41,19 @@ public class EventService {
         return eventMapper.toDto(event);
     }
 
-    public EventDto updateStatus(Long eventId, EventStatus status) {
-        var event = eventRepository.findById(eventId).orElse(null);
-        if (event == null) {
-            throw new EventNotFoundException();
-        }
-        event.setStatus(status);
+    public EventDto cancel(Long eventId) {
+        var event = eventRepository.findById(eventId)
+                .orElseThrow(EventNotFoundException::new);
+
+        event.setStatus(EventStatus.CANCELLED);
         eventRepository.save(event);
 
         return eventMapper.toDto(event);
     }
 
 
-    public PageDto<EventDto> getEvents(final Pageable pageable) {
-        var page = eventRepository.getPageEventWithOrganizer(pageable);
+    public PageDto<EventDto> getEvents(final Pageable pageable, String name, EventStatus status) {
+        var page = eventRepository.getPageEventWithOrganizer(pageable, name, status);
 
         return new PageDto<>(
                 page.getContent().stream().map(eventMapper::toDto).toList(),

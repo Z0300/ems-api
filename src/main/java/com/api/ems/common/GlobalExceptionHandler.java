@@ -40,9 +40,18 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleValidationErrors(
             MethodArgumentNotValidException exception
     ) {
-        var errors = new HashMap<String, String>();
+        Map<String, String> errors = new HashMap<>();
 
-        exception.getBindingResult().getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
+
+        exception.getBindingResult().getFieldErrors()
+                .forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
+
+
+        exception.getBindingResult().getGlobalErrors()
+                .forEach(error -> {
+                    // Use property path if possible, otherwise object name
+                    errors.put("schedule", error.getDefaultMessage());
+                });
 
         return ResponseEntity.badRequest().body(errors);
     }
