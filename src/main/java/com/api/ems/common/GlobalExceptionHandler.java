@@ -1,6 +1,7 @@
 package com.api.ems.common;
 
 import com.api.ems.events.EventNotFoundException;
+import com.api.ems.registrations.RegistrationNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -28,15 +29,20 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(RegistrationNotFoundException.class)
+    public ResponseEntity<ErrorDto> handlerNotFoundRegistration(RegistrationNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                new ErrorDto(ex.getMessage())
+        );
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationErrors(
             MethodArgumentNotValidException exception
     ) {
         var errors = new HashMap<String, String>();
 
-        exception.getBindingResult().getFieldErrors().forEach(error -> {
-            errors.put(error.getField(), error.getDefaultMessage());
-        });
+        exception.getBindingResult().getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
 
         return ResponseEntity.badRequest().body(errors);
     }
