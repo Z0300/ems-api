@@ -2,11 +2,13 @@ package com.api.ems.checkins;
 
 import com.api.ems.common.AuthService;
 import com.api.ems.common.PageDto;
+import com.api.ems.entities.Attendance;
 import com.api.ems.registrations.RegistrationNotFoundException;
 import com.api.ems.registrations.RegistrationRepository;
 import com.api.ems.users.UserDto;
 import com.api.ems.users.UserNotFoundException;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +21,16 @@ public class CheckinService {
     private final RegistrationRepository registrationRepository;
     private final CheckinRepository checkinRepository;
 
-    public PageDto<CheckinDto> getCheckins(final Pageable pageable) {
-        var page = checkinRepository.findAll(pageable);
+    public PageDto<CheckinDto> getCheckins(final Pageable pageable, String name) {
+
+        Page<Attendance> page;
+
+        if (name == null || name.isBlank()) {
+            page = checkinRepository.findAll(pageable);
+        } else {
+            page = checkinRepository
+                    .findAttendancesByRegistration_Attendee_FullNameContainingIgnoreCase(name, pageable);
+        }
 
         return new PageDto<>(
                 page.getContent().stream().map(checkinMapper::toDto).toList(),

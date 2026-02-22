@@ -21,9 +21,10 @@ public class CheckinController {
 
     @GetMapping
     public PageDto<CheckinDto> getCheckins(
+            @RequestParam(required = false) String name,
             @SortDefault(sort = "checkInTime", direction = Sort.Direction.DESC) final Pageable pageable
     ) {
-        return checkinService.getCheckins(pageable);
+        return checkinService.getCheckins(pageable, name);
     }
 
     @GetMapping("/{id}")
