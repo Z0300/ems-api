@@ -20,7 +20,10 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             where (:name is null or lower(e.title)
             like lower(concat('%', :name, '%') ) )
             and (:status is null or e.status = :status)""")
-    Page<Event> getPageEventWithOrganizer(Pageable pageable, String name, EventStatus status);
+    Page<Event> getPageEventWithOrganizer(
+            Pageable pageable,
+            @Param("name") String name,
+            @Param("status") EventStatus status);
 
     @EntityGraph(attributePaths = "organizer")
     @Query("select e from Event e where e.id = :eventId")

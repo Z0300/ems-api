@@ -2,6 +2,7 @@ package com.api.ems.common;
 
 import com.api.ems.events.EventNotFoundException;
 import com.api.ems.registrations.RegistrationNotFoundException;
+import com.api.ems.users.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -19,6 +20,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorDto> handleUnreadableMessage() {
         return ResponseEntity.badRequest().body(
                 new ErrorDto("Invalid request body")
+        );
+    }
+
+    // User's Exceptions
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorDto> handleUserNotFound(UserNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                new ErrorDto(ex.getMessage())
         );
     }
 
@@ -48,10 +57,7 @@ public class GlobalExceptionHandler {
 
 
         exception.getBindingResult().getGlobalErrors()
-                .forEach(error -> {
-                    // Use property path if possible, otherwise object name
-                    errors.put("schedule", error.getDefaultMessage());
-                });
+                .forEach(error -> errors.put("schedule", error.getDefaultMessage()));
 
         return ResponseEntity.badRequest().body(errors);
     }

@@ -1,12 +1,8 @@
 package com.api.ems.users;
 
 import com.api.ems.common.ErrorDto;
-import com.api.ems.common.PageDto;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,20 +16,14 @@ public class UserController {
 
     private final UserService userService;
 
-    @GetMapping
-    public PageDto<UserDto> getUsers(
-            @SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) final Pageable pageable) {
-        return userService.getUsers(pageable);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getProfile(@PathVariable Long id) {
-        var profile = userService.getProfile(id);
+    @GetMapping("/me")
+    public ResponseEntity<UserDto> getProfile() {
+        var profile = userService.getCurrentUser();
         return ResponseEntity.ok(profile);
     }
 
     @PostMapping
-    public ResponseEntity<?> registerUser(
+    public ResponseEntity<?> register(
             @Valid @RequestBody RegisterUserRequest request,
             UriComponentsBuilder uriBuilder
     ) {
