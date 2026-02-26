@@ -1,5 +1,6 @@
 package com.api.ems.users;
 
+import com.api.ems.common.AuthService;
 import com.api.ems.common.PageDto;
 import com.api.ems.entities.enums.Role;
 import lombok.AllArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 @Service
 public class UserService {
+    private final AuthService authService;
     private UserRepository userRepository;
     private UserMapper userMapper;
     private PasswordEncoder passwordEncoder;
@@ -27,8 +29,8 @@ public class UserService {
         return userMapper.toDto(user);
     }
 
-    public PageDto<UserDto> getUsers(final Pageable pageable) {
-        var page = userRepository.findAll(pageable);
+    public PageDto<UserDto> getUsers(final Pageable pageable, String name) {
+        var page = userRepository.getPagedUser(pageable, name);
 
         return new PageDto<>(
                 page.getContent().stream().map(userMapper::toDto).toList(),
@@ -41,13 +43,25 @@ public class UserService {
         );
     }
 
-    public UserDto getProfile(Long id) {
-        var user = userRepository.findById(id).orElse(null);
+    public UserDto getUserById(Long id) {
 
-        if (user == null) {
-            throw new UserNotFoundException();
-        }
+        var user = userRepository.findById(id)
+                .orElseThrow(UserNotFoundException::new);
 
         return userMapper.toDto(user);
     }
+
+    public UserDto getCurrentUser() {
+        var currentUser = authService.getCurrentUser();
+        var user = userRepository.findById(currentUser.getId())
+                .orElseThrow(UserNotFoundException::new);
+        return userMapper.toDto(user);
+    }
+
+    public void deleteUser(Long id) {
+        var user = userRepository.findById(id)
+                .orElseThrow(UserNotFoundException::new);
+        userRepository.delete(user);
+    }
+
 }
