@@ -66,9 +66,21 @@ public class AuthController {
         return ResponseEntity.ok(new JwtResponse(accessToken.toString()));
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        Cookie cookie = new Cookie("refreshToken", null);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/auth/refresh");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok().build();
+    }
+
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<Void> handleBadCredentialsException() {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
+
 
 }

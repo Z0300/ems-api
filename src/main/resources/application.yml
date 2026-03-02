@@ -5,8 +5,5 @@ spring:
     secret: ${SPRING_JWT_SECRET}
     accessTokenExpiration: 900 # 5m
     refreshTokenExpiration: 604800 # 7d
-  qr:
-    secret: ${SPRING_QR_SECRET}
-    expirationInHours: 24
   profiles:
     active: dev
