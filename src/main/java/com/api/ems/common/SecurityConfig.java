@@ -34,6 +34,7 @@ public class SecurityConfig {
 
         http.sessionManagement(c ->
                         c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .cors(cors -> {})
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(c -> {
                             featureSecurityRules.forEach(r -> r.configure(c));
