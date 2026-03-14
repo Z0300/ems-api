@@ -77,9 +77,9 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<AuthUserResponse> me() {
+    public ResponseEntity<CurrentUserDto> me() {
         var user = authService.getCurrentUser();
-        return ResponseEntity.ok(new AuthUserResponse(user.getId(),user.getFullName(),user.getEmail()));
+        return ResponseEntity.ok(new CurrentUserDto(user.getId(),user.getFullName(),user.getEmail(),user.getRole()));
     }
 
     @PostMapping("/logout")
