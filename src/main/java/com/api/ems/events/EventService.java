@@ -2,11 +2,15 @@ package com.api.ems.events;
 
 import com.api.ems.common.AuthService;
 import com.api.ems.common.PageDto;
+import com.api.ems.entities.EventTag;
 import com.api.ems.entities.enums.EventStatus;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @AllArgsConstructor
 @Service
@@ -14,6 +18,7 @@ public class EventService {
     private final EventRepository eventRepository;
     private final EventMapper eventMapper;
     private final AuthService authService;
+    private final EventTagRepository eventTagRepository;
 
     public EventDto createEvent(CreateEventRequest request) {
         existsTitleFromDb(request.getTitle());
@@ -24,6 +29,14 @@ public class EventService {
         event.setOrganizer(organizer);
         event.setStatus(EventStatus.OPEN);
         eventRepository.save(event);
+
+        if(request.getTagIds() != null && !request.getTagIds().isEmpty()) {
+            List<EventTag> eventTags = request.getTagIds().stream()
+                    .map(tagId -> new EventTag(event.getId(), tagId))
+                    .toList();
+
+            eventTagRepository.saveAll(eventTags);
+        }
 
         return eventMapper.toDto(event);
     }

@@ -1,6 +1,7 @@
 package com.api.ems.entities;
 
 import com.api.ems.entities.enums.EventStatus;
+import com.api.ems.entities.enums.EventType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -53,6 +54,10 @@ public class Event {
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private EventStatus status;
+
+    @Column(name = "type")
+    @Enumerated(EnumType.STRING)
+    private EventType type;
 
     @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;

@@ -1,10 +1,13 @@
 package com.api.ems.events;
 
+import com.api.ems.common.ValidEnum;
+import com.api.ems.entities.enums.EventType;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Data
 @ValidEventSchedule
@@ -32,4 +35,10 @@ public class CreateEventRequest {
     @NotNull(message = "Capacity is required.")
     @PositiveOrZero(message = "Capacity must be a positive number")
     private Long capacity;
+
+    @NotNull(message = "Type is required")
+    @ValidEnum(enumClass = EventType.class, message = "Invalid type value")
+    private String type;
+
+    private List<Long> tagIds;
 }

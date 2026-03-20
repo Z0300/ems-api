@@ -1,6 +1,7 @@
 package com.api.ems.events;
 
 import com.api.ems.entities.enums.EventStatus;
+import com.api.ems.entities.enums.EventType;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -17,4 +18,5 @@ public class EventDto {
     private String location;
     private Long capacity;
     private EventStatus status;
+    private EventType type;
 }
