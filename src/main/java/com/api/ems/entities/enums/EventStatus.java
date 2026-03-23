@@ -3,5 +3,10 @@ package com.api.ems.entities.enums;
 public enum EventStatus {
     OPEN,
     CLOSED,
-    CANCELLED
+    CANCELLED,
+
+    // CUSTOM RETURN STRINGS
+    PAST,
+    ONGOING,
+    UPCOMING
 }
