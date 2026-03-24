@@ -65,6 +65,4 @@ public class EventController {
                 new ErrorDto(ex.getMessage())
         );
     }
-
-
 }
