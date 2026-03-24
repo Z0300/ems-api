@@ -32,6 +32,11 @@ public class UserController {
         return ResponseEntity.created(uri).body(userDto);
     }
 
+    @GetMapping("/dashboard")
+    public ResponseEntity<DashboardDto> getDashboard() {
+        var userDashboard = userService.getDashboardEvents();
+        return ResponseEntity.ok(userDashboard);
+    }
 
     @ExceptionHandler(UsernameConflictException.class)
     public ResponseEntity<ErrorDto> handleUsernameConflict(UsernameConflictException ex) {

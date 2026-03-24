@@ -5,16 +5,19 @@ import com.api.ems.common.PageDto;
 import com.api.ems.entities.Event;
 import com.api.ems.entities.enums.Role;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @AllArgsConstructor
 @Service
 public class UserService {
     private final AuthService authService;
-    private final UserEventMapper userEventsMapper;
+    private final UserEventMapper userEventMapper;
     private UserRepository userRepository;
     private UserMapper userMapper;
     private PasswordEncoder passwordEncoder;
@@ -47,40 +50,35 @@ public class UserService {
         );
     }
 
-    public PageDto<UserEventDto> getUsers(
-            final Pageable pageable,
-            Boolean registered,
-            Boolean past,
-            Integer days,
-            Long userId) {
+    public DashboardDto getDashboardEvents() {
+        var userId = getCurrentUser().getId();
+        Pageable limit = PageRequest.of(0, 5);
 
-        Specification<Event> spec = Specification.where((Specification<Event>) null);
+        List<UserEventDto> recommended = map(
+                dashboardRepository.findRecommended(userId, limit)
+        );
 
-        if (Boolean.TRUE.equals(past)) {
-            spec = spec.and(UserDashboardSpecification.isPast());
-        }
+        List<UserEventDto> registered = map(
+                dashboardRepository.findAll(UserDashboardSpecification.isRegistered(userId), limit)
+        );
 
-        if (days != null) {
-            spec = spec.and(UserDashboardSpecification.withinDays(days));
-        }
+        List<UserEventDto> past = map(
+                dashboardRepository.findAll(UserDashboardSpecification.isPast(), limit)
+        );
 
-        if (Boolean.TRUE.equals(registered) && userId != null) {
-            spec = spec.and(UserDashboardSpecification.isRegistered(userId));
-        }
+        List<UserEventDto> popular = map(
+                dashboardRepository.findPopular(limit)
+        );
 
-        var page = dashboardRepository.findAll(spec, pageable);
+        return new DashboardDto(recommended, popular, registered, past);
 
-        return new PageDto<>(
-                page.getContent()
-                        .stream()
-                        .map(userEventsMapper::toDto)
-                        .toList(),
-                page.getNumber(),
-                page.getSize(),
-                page.getTotalElements(),
-                page.getTotalPages(),
-                page.isFirst(),
-                page.isLast());
+    }
+
+    private List<UserEventDto> map(Page<Event> page) {
+        return page.getContent()
+                .stream()
+                .map(userEventMapper::toDto)
+                .toList();
     }
 
     public UserDto getUserById(Long id) {
