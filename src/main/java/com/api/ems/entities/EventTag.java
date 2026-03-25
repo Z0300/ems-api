@@ -16,7 +16,19 @@ public class EventTag {
     @EmbeddedId
     private EventTagId id;
 
-    public EventTag(Long eventId, Long tagId) {
-        this.id = new EventTagId(eventId, tagId);
+    @ManyToOne
+    @MapsId("eventId")
+    @JoinColumn(name = "event_id")
+    private Event event;
+
+    @ManyToOne
+    @MapsId("tagId")
+    @JoinColumn(name = "tag_id")
+    private Tag tag;
+
+    public EventTag(Event event, Tag tag) {
+        this.event = event;
+        this.tag = tag;
+        this.id = new EventTagId(event.getId(), tag.getId());
     }
 }

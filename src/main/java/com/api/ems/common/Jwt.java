@@ -25,6 +25,14 @@ public class Jwt {
         return Role.valueOf(claims.get("role", String.class));
     }
 
+    public String getEmail() {
+        return claims.get("email", String.class);
+    }
+
+    public String getName() {
+        return claims.get("name", String.class);
+    }
+
     public String toString() {
         return Jwts.builder().claims(claims).signWith(secretKey).compact();
     }

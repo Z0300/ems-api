@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
 
 
 @AllArgsConstructor
@@ -16,7 +15,9 @@ public class AuthService {
 
     public User getCurrentUser() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
-        var userId = (Long) Objects.requireNonNull(authentication).getPrincipal();
-        return userRepository.findById(Objects.requireNonNull(userId)).orElse(null);
+        if (authentication == null || !(authentication.getPrincipal() instanceof ClaimsPrincipal principal)) {
+            return null;
+        }
+        return userRepository.findById(principal.getId()).orElse(null);
     }
 }

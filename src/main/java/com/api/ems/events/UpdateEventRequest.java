@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Data
 public class UpdateEventRequest {
@@ -31,4 +32,6 @@ public class UpdateEventRequest {
     @NotNull(message = "Capacity is required.")
     @PositiveOrZero(message = "Capacity must be a positive number")
     private Long capacity;
+
+    private List<Long> tagIds;
 }
