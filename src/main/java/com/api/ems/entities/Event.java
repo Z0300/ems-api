@@ -65,6 +65,8 @@ public class Event {
     @OneToMany(mappedBy = "event")
     private Set<Registration> registrations = new LinkedHashSet<>();
 
+    @OneToMany(mappedBy = "event")
+    private Set<EventTag> eventTags = new LinkedHashSet<>();
 
     public boolean isOrganizedBy(User organizer) {
         return this.organizer.equals(organizer);

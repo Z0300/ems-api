@@ -18,6 +18,7 @@ public class EventService {
     private final EventMapper eventMapper;
     private final AuthService authService;
     private final EventTagRepository eventTagRepository;
+    private final TagRepository tagRepository;
 
     public EventDto createEvent(CreateEventRequest request) {
         existsTitleFromDb(request.getTitle());
@@ -31,7 +32,7 @@ public class EventService {
 
         if(request.getTagIds() != null && !request.getTagIds().isEmpty()) {
             List<EventTag> eventTags = request.getTagIds().stream()
-                    .map(tagId -> new EventTag(event.getId(), tagId))
+                    .map(tagId -> new EventTag(event, tagRepository.getReferenceById(tagId)))
                     .toList();
 
             eventTagRepository.saveAll(eventTags);
@@ -43,12 +44,22 @@ public class EventService {
     public EventDto updateEvent(UpdateEventRequest request, Long eventId) {
         existsTitleFromDb(request.getTitle());
 
-        var event = eventRepository.findById(eventId).orElse(null);
+        var event = eventRepository.getEventWithOrganizerById(eventId).orElse(null);
         if (event == null) {
             throw new EventNotFoundException();
         }
         eventMapper.update(request, event);
         eventRepository.save(event);
+
+        if (request.getTagIds() != null) {
+            eventTagRepository.deleteAll(event.getEventTags());
+
+            List<EventTag> eventTags = request.getTagIds().stream()
+                    .map(tagId -> new EventTag(event, tagRepository.getReferenceById(tagId)))
+                    .toList();
+
+            eventTagRepository.saveAll(eventTags);
+        }
 
         return eventMapper.toDto(event);
     }

@@ -29,13 +29,12 @@ public interface DashboardRepository extends JpaRepository<Event, Integer>,
                     join e2.eventTags et2
                     join et2.tag t2
                     where r.attendee.id = :userId
-                    and e2.eventDate < CURRENT_DATE
                 )
                 and e.eventDate >= CURRENT_DATE
                 and e.id not in (
                     select r3.event.id from Registration r3 where r3.attendee.id = :userId
                 )
-                group by e
+                group by e.id
                 order by
                     count(t.id) desc,
                     (select count(r4) from Registration r4 where r4.event.id = e.id) desc
@@ -46,6 +45,7 @@ public interface DashboardRepository extends JpaRepository<Event, Integer>,
     @Query("""
             select e from Event e
             where e.eventDate >= CURRENT_DATE
+            and e.status = com.api.ems.entities.enums.EventStatus.OPEN
             order by (
                 select count(r) from Registration r where r.event.id = e.id
             ) desc

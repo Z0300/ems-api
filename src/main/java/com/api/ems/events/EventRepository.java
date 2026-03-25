@@ -25,7 +25,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             @Param("name") String name,
             @Param("status") EventStatus status);
 
-    @EntityGraph(attributePaths = "organizer")
+    @EntityGraph(attributePaths = {"organizer", "eventTags"})
     @Query("select e from Event e where e.id = :eventId")
     Optional<Event> getEventWithOrganizerById(@Param("eventId") Long eventId);
 }
