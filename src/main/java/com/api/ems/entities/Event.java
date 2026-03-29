@@ -7,6 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -65,8 +68,12 @@ public class Event {
     @OneToMany(mappedBy = "event")
     private Set<Registration> registrations = new LinkedHashSet<>();
 
+
+    @Fetch(FetchMode.SUBSELECT)
     @OneToMany(mappedBy = "event")
+    @BatchSize(size = 20)
     private Set<EventTag> eventTags = new LinkedHashSet<>();
+
 
     public boolean isOrganizedBy(User organizer) {
         return this.organizer.equals(organizer);

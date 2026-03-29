@@ -2,11 +2,13 @@ package com.api.ems.users;
 
 import com.api.ems.entities.enums.EventStatus;
 import com.api.ems.entities.enums.EventType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 @Data
 public class UserEventDto {
@@ -18,7 +20,16 @@ public class UserEventDto {
     private LocalTime endTime;
     private String location;
     private Long capacity;
+
+    @JsonIgnore
     private EventType type;
+
+    @JsonProperty("type")
+    public String getComputedType() {
+        return type != null ? type.getLabel() : null;
+    }
+
+    private List<String> tags;
 
     public LocalDateTime getStartDateTime() {
         return (eventDate == null || startTime == null)

@@ -20,24 +20,33 @@ public interface DashboardRepository extends JpaRepository<Event, Integer>,
     Page<Event> findAll(Specification<Event> spec, Pageable pageable);
 
     @Query("""
-                select e from Event e
-                join e.eventTags et
-                join et.tag t
-                where t.id in (
-                    select t2.id from Registration r
-                    join r.event e2
-                    join e2.eventTags et2
-                    join et2.tag t2
-                    where r.attendee.id = :userId
-                )
-                and e.eventDate >= CURRENT_DATE
-                and e.id not in (
-                    select r3.event.id from Registration r3 where r3.attendee.id = :userId
-                )
-                group by e.id
-                order by
-                    count(t.id) desc,
-                    (select count(r4) from Registration r4 where r4.event.id = e.id) desc
+            select e from Event e
+                     where e.eventDate >= CURRENT_DATE
+                       and e.status = com.api.ems.entities.enums.EventStatus.OPEN
+                       and e.id not in (
+                           select r.event.id from Registration r where r.attendee.id = :userId
+                       )
+                       and exists (
+                           select 1 from e.eventTags et
+                           where et.tag.id in (
+                               select t2.id from Registration r
+                               join r.event e2
+                               join e2.eventTags et2
+                               join et2.tag t2
+                               where r.attendee.id = :userId
+                           )
+                       )
+                     order by
+                       (select count(et4) from e.eventTags et4\s
+                        where et4.tag.id in (
+                            select t2.id from Registration r
+                            join r.event e2
+                            join e2.eventTags et2
+                            join et2.tag t2
+                            where r.attendee.id = :userId
+                        )
+                       ) desc,
+                       (select count(r4) from Registration r4 where r4.event.id = e.id) desc
             """)
     @EntityGraph(attributePaths = {"organizer"})
     Page<Event> findRecommended(Long userId, Pageable pageable);
